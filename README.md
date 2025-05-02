@@ -8,7 +8,8 @@ This role installs the [TAK.gov](https://tak.gov/) takserver as a standalone sin
 
 - Requires Ansible v2.15+
 
-- Supports Debian-based Linux distributions.
+- Supports Debian and REHL-based Linux distributions.\
+  See [galaxy_info](https://github.com/ThatKalle/ansible-role-takserver/blob/main/meta/main.yml#L10).
 
 - Requires the `community.general` collection to be installed:
 
