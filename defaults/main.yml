@@ -1,4 +1,6 @@
 ---
+# defaults file for ansible-role-takserver
+
 takserver_ca_country: "SE"
 takserver_ca_state: "Stockholm"
 takserver_ca_city: "Stockholm"
