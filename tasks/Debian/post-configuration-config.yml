@@ -7,7 +7,6 @@
     owner: tak
     group: tak
     mode: preserve
-  become: true
 
 - name: Update TAK Server hostname CoreConfig.example.xml
   community.general.xml:
@@ -24,7 +23,6 @@
     - /a:Configuration/a:federation/a:federation-server/a:tls
   loop_control:
     loop_var: path
-  become: true
 
 - name: Update TAK Server truststore CoreConfig.example.xml
   community.general.xml:
@@ -36,6 +34,5 @@
       a: http://bbn.com/marti/xml/config
       b: http://www.w3.org/2001/XMLSchema-instance
       c: file:///opt/tak/CoreConfig.xsd
-  become: true
 
 ## TODO: Add more configuraiton options

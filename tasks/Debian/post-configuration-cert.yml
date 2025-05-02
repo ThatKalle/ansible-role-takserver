@@ -4,7 +4,6 @@
     path: /opt/tak/certs/cert-metadata.sh
     regexp: '^(COUNTRY=).*'
     replace: '\1{{ takserver_ca_country | default("default_takserver_ca_country") }}'
-  become: true
 
 - name: Replace values in the TAK Server cert metadata.
   ansible.builtin.replace:
@@ -18,7 +17,6 @@
     - {key: 'ORGANIZATIONAL_UNIT', value: '{{ takserver_ca_ou | default("default_takserver_ca_ou") }}'}
   loop_control:
     loop_var: setting
-  become: true
 
 - name: Replace password values in the TAK Server cert metadata.
   ansible.builtin.replace:
@@ -31,21 +29,18 @@
   loop_control:
     loop_var: setting
   no_log: true
-  become: true
 
 - name: Generate TAK Server Root CA.
   ansible.builtin.command: ./makeRootCa.sh --ca-name {{ takserver_ca_name | default('default_takserver_ca_name') }}
   args:
     chdir: /opt/tak/certs
     creates: /opt/tak/certs/files/ca.pem
-  become: true
 
 - name: Download TAK Server Root CA.
   ansible.builtin.fetch:
     src: /opt/tak/certs/files/truststore-root.p12
     dest: ../output/
     flat: true
-  become: true
 
 - name: Generate TAK Server Intermediate CA.
   ansible.builtin.expect:
@@ -55,18 +50,15 @@
         - y
     chdir: /opt/tak/certs
     creates: /opt/tak/certs/files/{{ takserver_intermediateca_name | default('default_takserver_intermediateca_name') }}.pem
-  become: true
 
 - name: Download TAK Server Intermediate CA.
   ansible.builtin.fetch:
     src: /opt/tak/certs/files/truststore-takserver-intermediate-ca.p12
     dest: ../output/
     flat: true
-  become: true
 
 - name: Generate TAK Server TLS certificate.
   ansible.builtin.command: ./makeCert.sh server {{ takserver_cert_name | default('default_takserver_cert_name') }}
   args:
     chdir: /opt/tak/certs
     creates: /opt/tak/certs/files/{{ takserver_cert_name | default('default_takserver_cert_name') }}.jks
-  become: true

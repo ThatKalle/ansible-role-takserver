@@ -7,7 +7,6 @@
     block: |
       *      soft      nofile      32768
       *      hard      nofile      32768
-  become: true
 
 - name: Install packages
   ansible.builtin.apt:
@@ -18,7 +17,6 @@
       - gnupg
       - openjdk-17-jre
       - debsig-verify
-  become: true
 
 - name: Run java -version and capture output
   ansible.builtin.command: java -version

@@ -13,21 +13,18 @@
     path: "/etc/debsig/policies/{{ key_id }}"
     state: directory
     mode: '0755'
-  become: true
 
 - name: Copy deb_policy.pol
   ansible.builtin.copy:
     src: deb_policy.pol
     dest: "/etc/debsig/policies/{{ key_id }}/debsig.pol"
     mode: '0644'
-  become: true
 
 - name: Create keyring directory if it does not exist
   ansible.builtin.file:
     path: "/usr/share/debsig/keyrings/{{ key_id }}"
     state: directory
     mode: '0755'
-  become: true
 
 - name: Create empty keyring file (debsig.gpg)
   ansible.builtin.file:
@@ -35,7 +32,6 @@
     state: touch
     mode: '0644'
   changed_when: false
-  become: true
 
 - name: Check if TAKServer GPG key already exists
   ansible.builtin.stat:
@@ -48,7 +44,6 @@
     dest: "/tmp/takserver-public-gpg.key"
     mode: '0644'
   when: not tak_key.stat.exists
-  become: true
 
 - name: List keys in the custom keyring
   ansible.builtin.command: >
@@ -59,7 +54,6 @@
   ignore_errors: true
   changed_when: false
   when: not tak_key.stat.exists
-  become: true
 
 - name: Check if key is already in keyring
   ansible.builtin.set_fact:
@@ -72,14 +66,12 @@
         --keyring /usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg
         --import /tmp/takserver-public-gpg.key
   when: (not key_present | default(false)) and not tak_key.stat.exists
-  become: true
 
 - name: Remove /tmp/takserver-public-gpg.key if it exists
   ansible.builtin.file:
     path: /tmp/takserver-public-gpg.key
     state: absent
   when: not tak_key.stat.exists
-  become: true
 
 - name: Check if TAKServer deb already exists {{ takserver_deb_filename }}
   ansible.builtin.stat:
@@ -92,16 +84,13 @@
     dest: "/tmp/{{ takserver_deb_filename }}"
     mode: '0644'
   when: not tak_deb.stat.exists
-  become: true
 
 - name: Verify TAKServer deb {{ takserver_deb_filename }}
   ansible.builtin.command: debsig-verify -v /tmp/{{ takserver_deb_filename }}
   register: verify_output
   failed_when: verify_output.rc != 0
   changed_when: false
-  become: true
 
 - name: Install TAKServer deb {{ takserver_deb_filename }}
   ansible.builtin.apt:
     deb: "/tmp/{{ takserver_deb_filename }}"
-  become: true
