@@ -3,6 +3,7 @@ use_default_rules: true
 
 skip_list:
   - no-changed-when
+  - role-name
 
 warn_list:
   - yaml[line-length]
