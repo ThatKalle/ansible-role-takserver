@@ -2,3 +2,4 @@
 deb_policy.pol
 takserver-public-gpg.key
 takserver_*_all.deb
+takserver-*.noarch.rpm
