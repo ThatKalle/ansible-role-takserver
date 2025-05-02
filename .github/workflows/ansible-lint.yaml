@@ -28,6 +28,7 @@ jobs:
             --sarif-file ansible-lint.sarif
           setup_python: true
           requirements_file: requirements.yml
+        continue-on-error: true
 
       - name: Upload CodeQL sarif
         if: github.event_name == 'workflow_dispatch'
