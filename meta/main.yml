@@ -1,12 +1,16 @@
+---
 galaxy_info:
-  author: Kalle Lilja
+  author: ThatKalle
   description: Install TAKServer
-
-  # issue_tracker_url: http://example.com/issue/tracker
-
+  role_name: takserver
+  issue_tracker_url: https://github.com/ThatKalle/ansible-role-takserver/issues
   license: MIT
   min_ansible_version: "2.15"
-
+  standalone: true
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
   galaxy_tags:
     - tak
 
