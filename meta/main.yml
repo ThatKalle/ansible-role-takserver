@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Kalle Lilja
+  description: Install TAKServer
+
+  # issue_tracker_url: http://example.com/issue/tracker
+
+  license: MIT
+  min_ansible_version: "2.15"
+
+  galaxy_tags:
+    - tak
+
+dependencies: []
+
+collections:
+  - community.general

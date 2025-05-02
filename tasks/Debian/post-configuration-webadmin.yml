@@ -1,0 +1,19 @@
+---
+- name: Generate client certificate - webadmin
+  ansible.builtin.command: ./makeCert.sh client webadmin
+  args:
+    chdir: /opt/tak/certs
+    creates: /opt/tak/certs/files/webadmin.pem
+  become: true
+
+- name: UserManager - webadmin
+  ansible.builtin.command: java -jar /opt/tak/utils/UserManager.jar certmod -A /opt/tak/certs/files/webadmin.pem
+  changed_when: false
+  become: true
+
+- name: Download webadmin.p12
+  ansible.builtin.fetch:
+    src: /opt/tak/certs/files/webadmin.p12
+    dest: ../output/
+    flat: true
+  become: true

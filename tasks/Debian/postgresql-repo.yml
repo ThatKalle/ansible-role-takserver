@@ -1,0 +1,63 @@
+---
+- name: Add PostgreSQL repository
+  ansible.builtin.apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+    state: present
+    update_cache: false
+  become: true
+
+- name: Check if PostgreSQL GPG key already exists
+  ansible.builtin.stat:
+    path: /etc/apt/trusted.gpg.d/postgresql.org.gpg
+  register: pg_key
+
+- name: Download PostgreSQL GPG key
+  ansible.builtin.get_url:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    dest: /tmp/ACCC4CF8.asc
+    mode: '0644'
+  when: not pg_key.stat.exists
+  become: true
+
+- name: Convert key to GPG binary format
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /tmp/postgresql.gpg /tmp/ACCC4CF8.asc
+  when: not pg_key.stat.exists
+  become: true
+
+- name: Move dearmored key to trusted.gpg.d
+  ansible.builtin.copy:
+    src: /tmp/postgresql.gpg
+    remote_src: true
+    dest: /etc/apt/trusted.gpg.d/postgresql.org.gpg
+    owner: root
+    group: root
+    mode: '0644'
+  when: not pg_key.stat.exists
+  become: true
+
+- name: Remove temporary ASCII key file
+  ansible.builtin.file:
+    path: /tmp/ACCC4CF8.asc
+    state: absent
+  when: not pg_key.stat.exists
+  become: true
+
+- name: Remove temporary dearmored GPG key file
+  ansible.builtin.file:
+    path: /tmp/postgresql.gpg
+    state: absent
+  when: not pg_key.stat.exists
+  become: true
+
+# - name: Add postgres repository key
+#   ansible.builtin.apt_key:
+#     url: "https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc"
+#     state: present
+#   become: true
+
+- name: Update apt package cache
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  when: not pg_key.stat.exists

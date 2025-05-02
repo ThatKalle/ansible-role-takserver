@@ -1,0 +1,17 @@
+---
+- name: Run daemon_reload
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  become: true
+
+- name: Enable service takserver
+  ansible.builtin.systemd_service:
+    name: takserver
+    enabled: true
+  become: true
+
+- name: Make sure service takserver is running
+  ansible.builtin.systemd_service:
+    name: takserver
+    state: started
+  become: true

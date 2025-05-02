@@ -1,0 +1,44 @@
+---
+- name: Increase JVM threads
+  ansible.builtin.blockinfile:
+    path: /etc/security/limits.conf
+    append_newline: true
+    prepend_newline: false
+    block: |
+      *      soft      nofile      32768
+      *      hard      nofile      32768
+  become: true
+
+- name: Install packages
+  ansible.builtin.apt:
+    pkg:
+      - libxml2-utils
+      - python3-lxml
+      - lsb-release
+      - gnupg
+      - openjdk-17-jre
+      - debsig-verify
+  become: true
+
+- name: Run java -version and capture output
+  ansible.builtin.command: java -version
+  register: java_version_output
+  changed_when: false
+
+- name: Extract Java major version
+  ansible.builtin.set_fact:
+    java_full_version: "{{ java_version_output.stderr | regex_search('\"([0-9]+\\.[0-9]+\\.[0-9]+)\"', '\\1') }}"
+  when: java_version_output.rc == 0
+
+- name: Extract Java major version
+  ansible.builtin.set_fact:
+    java_major_version: "{{ java_full_version[0].split('.')[0] | int }}"
+  when: java_version_output.rc == 0
+
+- name: Java version is not 17
+  ansible.builtin.fail:
+    msg: "Java version is not 17. Found: {{ java_full_version }}\nRun command: sudo update-alternatives --config java"
+  when: java_major_version != "17"
+
+- name: Install PostgreSQL repository
+  ansible.builtin.include_tasks: "postgresql-repo.yml"

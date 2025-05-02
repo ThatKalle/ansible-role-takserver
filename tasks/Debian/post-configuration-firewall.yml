@@ -1,0 +1,49 @@
+---
+- name: Install ufw if not present
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+  become: true
+
+- name: Set default policy to deny incoming
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+  become: true
+
+- name: Set default policy to allow outgoing
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+  become: true
+
+- name: Allow SSH
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+  become: true
+
+- name: Allow TAK ports for client-to-server communications
+  community.general.ufw:
+    rule: allow
+    direction: in
+    proto: "{{ rule.proto }}"
+    port: "{{ rule.port }}"
+  loop:
+    - {proto: 'tcp', port: '8089'}
+    - {proto: 'tcp', port: '8443'}
+    - {proto: 'tcp', port: '8446'}
+    - {proto: 'tcp', port: '8444'}
+    - {proto: 'tcp', port: '9000'}
+    - {proto: 'tcp', port: '9001'}
+    - {proto: 'tcp', port: '9100'}
+    - {proto: 'tcp', port: '9102'}
+  loop_control:
+    loop_var: rule
+  become: true
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  become: true

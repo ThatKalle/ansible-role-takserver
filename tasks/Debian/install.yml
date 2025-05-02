@@ -1,0 +1,107 @@
+---
+- name: Read deb_policy.pol
+  ansible.builtin.set_fact:
+    policy_xml: "{{ lookup('file', 'files/deb_policy.pol') }}"
+  delegate_to: localhost
+
+- name: Extract key ID from deb_policy.pol
+  ansible.builtin.set_fact:
+    key_id: "{{ (policy_xml | regex_findall('id=\"([A-F0-9]{16})\"'))[0] }}"
+
+- name: Create debsig directory if it does not exist
+  ansible.builtin.file:
+    path: "/etc/debsig/policies/{{ key_id }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Copy deb_policy.pol
+  ansible.builtin.copy:
+    src: deb_policy.pol
+    dest: "/etc/debsig/policies/{{ key_id }}/debsig.pol"
+    mode: '0644'
+  become: true
+
+- name: Create keyring directory if it does not exist
+  ansible.builtin.file:
+    path: "/usr/share/debsig/keyrings/{{ key_id }}"
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Create empty keyring file (debsig.gpg)
+  ansible.builtin.file:
+    path: "/usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg"
+    state: touch
+    mode: '0644'
+  changed_when: false
+  become: true
+
+- name: Check if TAKServer GPG key already exists
+  ansible.builtin.stat:
+    path: "/usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg"
+  register: tak_key
+
+- name: Copy GPG public key to remote
+  ansible.builtin.copy:
+    src: "takserver-public-gpg.key"
+    dest: "/tmp/takserver-public-gpg.key"
+    mode: '0644'
+  when: not tak_key.stat.exists
+  become: true
+
+- name: List keys in the custom keyring
+  ansible.builtin.command: >
+    gpg --no-default-keyring
+        --keyring /usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg
+        --list-keys
+  register: gpg_list_result
+  ignore_errors: true
+  changed_when: false
+  when: not tak_key.stat.exists
+  become: true
+
+- name: Check if key is already in keyring
+  ansible.builtin.set_fact:
+    key_present: "{{ key_id in gpg_list_result.stdout | default('') }}"
+  when: not tak_key.stat.exists
+
+- name: Import GPG key into keyring if missing
+  ansible.builtin.command: >
+    gpg --no-default-keyring
+        --keyring /usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg
+        --import /tmp/takserver-public-gpg.key
+  when: (not key_present | default(false)) and not tak_key.stat.exists
+  become: true
+
+- name: Remove /tmp/takserver-public-gpg.key if it exists
+  ansible.builtin.file:
+    path: /tmp/takserver-public-gpg.key
+    state: absent
+  when: not tak_key.stat.exists
+  become: true
+
+- name: Check if TAKServer deb already exists {{ deb_filename }}
+  ansible.builtin.stat:
+    path: "/tmp/{{ deb_filename }}"
+  register: tak_deb
+
+- name: Copy TAKServer deb {{ deb_filename }}
+  ansible.builtin.copy:
+    src: "{{ deb_filename }}"
+    dest: "/tmp/{{ deb_filename }}"
+    mode: '0644'
+  when: not tak_deb.stat.exists
+  become: true
+
+- name: Verify TAKServer deb {{ deb_filename }}
+  ansible.builtin.command: debsig-verify -v /tmp/{{ deb_filename }}
+  register: verify_output
+  failed_when: verify_output.rc != 0
+  changed_when: false
+  become: true
+
+- name: Install TAKServer deb {{ deb_filename }}
+  ansible.builtin.apt:
+    deb: "/tmp/{{ deb_filename }}"
+  become: true
