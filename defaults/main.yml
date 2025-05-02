@@ -6,9 +6,8 @@ takserver_ca_state: "Stockholm"
 takserver_ca_city: "Stockholm"
 takserver_ca_org: "TAK"
 takserver_ca_ou: "TAK"
-takserver_ca_capass: "atakatak"
-takserver_cert_pass: "atakatak"
-
-takserver_ca_name: "takserver-ca"
-takserver_intermediateca_name: "takserver-intermediate-ca"
-takserver_cert_name: "takserver"
+takserver_ca_name: "takserver-ca"  # RootCA
+takserver_intermediateca_name: "takserver-intermediate-ca"  # CA
+takserver_ca_capass: "atakatak"  # needed by clients
+takserver_cert_name: "takserver"  # TAK Server
+takserver_cert_pass: "atakatak"  # needed by clients

@@ -8,7 +8,7 @@
     group: tak
     mode: preserve
 
-- name: Update TAK Server hostname CoreConfig.example.xml
+- name: Update TAK Server keystoreFile CoreConfig.example.xml
   community.general.xml:
     path: /opt/tak/CoreConfig.example.xml
     xpath: "{{ path }}"
@@ -24,7 +24,24 @@
   loop_control:
     loop_var: path
 
-- name: Update TAK Server truststore CoreConfig.example.xml
+- name: Update TAK Server keystorePass CoreConfig.example.xml
+  community.general.xml:
+    path: /opt/tak/CoreConfig.example.xml
+    xpath: "{{ path }}"
+    value: "{{ takserver_cert_pass | default('default_takserver_cert_pass') }}"
+    attribute: keystorePass
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+  loop:
+    - /a:Configuration/a:security/a:tls
+    - /a:Configuration/a:federation/a:federation-server/a:tls
+  loop_control:
+    loop_var: path
+  no_log: true
+
+- name: Update TAK Server truststoreFile CoreConfig.example.xml
   community.general.xml:
     path: /opt/tak/CoreConfig.example.xml
     xpath: /a:Configuration/a:security/a:tls
@@ -34,5 +51,17 @@
       a: http://bbn.com/marti/xml/config
       b: http://www.w3.org/2001/XMLSchema-instance
       c: file:///opt/tak/CoreConfig.xsd
+
+- name: Update TAK Server truststorePass CoreConfig.example.xml
+  community.general.xml:
+    path: /opt/tak/CoreConfig.example.xml
+    xpath: /a:Configuration/a:security/a:tls
+    value: "{{ takserver_ca_capass | default('takserver_ca_capass') }}"
+    attribute: truststorePass
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+  no_log: true
 
 ## TODO: Add more configuraiton options
