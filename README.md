@@ -1,12 +1,13 @@
 # Ansible Role: Takserver
 
-This role installes the [TAK.gov](https://tak.gov/) takserver as a standalone single-server mvp.
+This role installs the [TAK.gov](https://tak.gov/) takserver as a standalone single-server _mvp_.
 
 ## Setup
 
 ### Requirements
 
 - Requires the `community.general` collection to be installed:
+
   ```bash
   ansible-galaxy collection install community.general
   ```
