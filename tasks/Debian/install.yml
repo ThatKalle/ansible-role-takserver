@@ -26,17 +26,18 @@
     state: directory
     mode: '0755'
 
+- name: Check if TAKServer GPG key already exists
+  ansible.builtin.stat:
+    path: "/usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg"
+  register: tak_key
+
 - name: Create empty keyring file (debsig.gpg)
   ansible.builtin.file:
     path: "/usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg"
     state: touch
     mode: '0644'
   changed_when: false
-
-- name: Check if TAKServer GPG key already exists
-  ansible.builtin.stat:
-    path: "/usr/share/debsig/keyrings/{{ key_id }}/debsig.gpg"
-  register: tak_key
+  when: not tak_key.stat.exists
 
 - name: Copy GPG public key to remote
   ansible.builtin.copy:
