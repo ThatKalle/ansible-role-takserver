@@ -14,3 +14,15 @@
     - post-configuration-webadmin.yml
     - post-configuration-firewall.yml
   when: ansible_facts['os_family'] == 'Debian'
+
+# - name: Install TAK Server on RedHat
+#   ansible.builtin.include_tasks: "RedHat/{{ item }}"
+#   loop:
+#     - prerequisites.yml
+#     - install.yml
+#     - post-configuration-cert.yml
+#     - post-configuration-config.yml
+#     - post-configuration-service.yml
+#     - post-configuration-webadmin.yml
+#     - post-configuration-firewall.yml
+#   when: ansible_facts['os_family'] == 'RedHat'

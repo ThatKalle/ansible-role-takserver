@@ -6,6 +6,10 @@ This role installs the [TAK.gov](https://tak.gov/) takserver as a standalone sin
 
 ### Requirements
 
+- Requires Ansible v2.15+
+
+- Supports Debian-based Linux distributions.
+
 - Requires the `community.general` collection to be installed:
 
   ```bash
