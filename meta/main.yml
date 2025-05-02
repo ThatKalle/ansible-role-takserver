@@ -11,6 +11,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - noble
+        - jammy
     - name: EL
       versions:
         - '9'
