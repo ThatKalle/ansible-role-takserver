@@ -1,4 +1,4 @@
-name: ansible-lint
+name: 'Ansible Lint'
 on:
   pull_request:
     branches:
@@ -10,8 +10,9 @@ permissions:
 
 jobs:
   ansible-lint:
-    name: Ansible Lint
+    name: 'Ansible Lint'
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       security-events: write
