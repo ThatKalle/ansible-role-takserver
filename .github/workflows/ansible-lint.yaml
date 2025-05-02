@@ -3,6 +3,13 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'defaults/**'
+      - 'files/**'
+      - 'handlers/**'
+      - 'meta/**'
+      - 'tasks/**'
+      - 'vars/**'
   workflow_dispatch:
 
 permissions:
