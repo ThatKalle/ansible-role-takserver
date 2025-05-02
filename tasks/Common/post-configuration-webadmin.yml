@@ -7,6 +7,10 @@
 
 - name: UserManager - webadmin
   ansible.builtin.command: java -jar /opt/tak/utils/UserManager.jar certmod -A /opt/tak/certs/files/webadmin.pem
+  retries: 3
+  delay: 15
+  register: result
+  until: result.rc == 0
   changed_when: false
 
 - name: Download webadmin.p12
