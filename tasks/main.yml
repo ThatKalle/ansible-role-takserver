@@ -3,6 +3,18 @@
   ansible.builtin.setup:
   when: ansible_facts | length == 0
 
+- name: Modify Linux PAM limits
+  community.general.pam_limits:
+    domain: '*'
+    limit_type: "{{ type }}"
+    limit_item: nofile
+    value: 32768
+  loop:
+    - soft
+    - hard
+  loop_control:
+    loop_var: type
+
 - name: Install TAK Server on Debian
   ansible.builtin.include_tasks: "Debian/{{ item }}"
   loop:

@@ -1,13 +1,4 @@
 ---
-- name: Increase JVM threads
-  ansible.builtin.blockinfile:
-    path: /etc/security/limits.conf
-    append_newline: true
-    prepend_newline: false
-    block: |
-      *      soft      nofile      32768
-      *      hard      nofile      32768
-
 - name: Install packages
   ansible.builtin.apt:
     pkg:
