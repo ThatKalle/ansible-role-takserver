@@ -9,11 +9,6 @@
       - checkpolicy
       - dnf-plugins-core
 
-
-# - name: Install pexpect
-#   ansible.builtin.pip:
-#     name: pexpect
-
 - name: Install PostgreSQL repo RPM (RHEL 8).
   ansible.builtin.dnf:
     name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm

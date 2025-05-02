@@ -2,6 +2,7 @@
 - name: Install packages
   ansible.builtin.apt:
     pkg:
+      - python3-pexpect  # Used by Ansible
       - python3-lxml  # Used by Ansible
       - libxml2-utils
       - lsb-release
