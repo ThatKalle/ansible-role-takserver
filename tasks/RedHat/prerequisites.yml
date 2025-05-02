@@ -1,0 +1,76 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    pkg:
+      - python3-pexpect  # Used by Ansible
+      - python3-lxml  # Used by Ansible
+      - epel-release
+      - java-17-openjdk-devel
+      - checkpolicy
+      - dnf-plugins-core
+
+
+# - name: Install pexpect
+#   ansible.builtin.pip:
+#     name: pexpect
+
+- name: Install PostgreSQL repo RPM (RHEL 8).
+  ansible.builtin.dnf:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    disablerepo: "*"
+    disable_gpg_check: true
+  when: ansible_distribution_major_version == "8"
+
+- name: Install PostgreSQL repo RPM (RHEL 9).
+  ansible.builtin.dnf:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    disablerepo: "*"
+    disable_gpg_check: true
+  when: ansible_distribution_major_version == "9"
+
+- name: Disable default PostgreSQL DNF module.
+  community.general.ini_file:
+    path: /etc/dnf/modules.d/postgresql.module
+    section: postgresql
+    option: state
+    value: disabled
+    no_extra_spaces: true
+    mode: "0644"
+    owner: root
+    group: root
+  register: postgresql_dnf_module_disabled
+
+- name: Update DNF cache.
+  tags: always
+  ansible.builtin.dnf:
+    update_cache: true
+
+- name: Enable powertools (RHEL 8)
+  ansible.builtin.command: dnf config-manager --set-enabled powertools
+  changed_when: false
+  when: ansible_distribution_major_version == "8"
+
+- name: Enable crb (RHEL 9)
+  ansible.builtin.command: dnf config-manager --set-enabled crb
+  changed_when: false
+  when: ansible_distribution_major_version == "9"
+
+- name: Run java -version and capture output
+  ansible.builtin.command: java -version
+  register: java_version_output
+  changed_when: false
+
+- name: Extract Java major version
+  ansible.builtin.set_fact:
+    java_full_version: "{{ java_version_output.stderr | regex_search('\"([0-9]+\\.[0-9]+\\.[0-9]+)\"', '\\1') }}"
+  when: java_version_output.rc == 0
+
+- name: Extract Java major version
+  ansible.builtin.set_fact:
+    java_major_version: "{{ java_full_version[0].split('.')[0] | int }}"
+  when: java_version_output.rc == 0
+
+- name: Java version is not 17
+  ansible.builtin.fail:
+    msg: "Java version is not 17. Found: {{ java_full_version }}\nRun command: sudo update-alternatives --config java"
+  when: java_major_version != "17"

@@ -39,7 +39,7 @@
 - name: Download TAK Server Root CA.
   ansible.builtin.fetch:
     src: /opt/tak/certs/files/truststore-root.p12
-    dest: ../output/
+    dest: "../output/{{ inventory_hostname }}/"
     flat: true
 
 - name: Generate TAK Server Intermediate CA.
@@ -54,7 +54,7 @@
 - name: Download TAK Server Intermediate CA.
   ansible.builtin.fetch:
     src: /opt/tak/certs/files/truststore-takserver-intermediate-ca.p12
-    dest: ../output/
+    dest: "../output/{{ inventory_hostname }}/"
     flat: true
 
 - name: Generate TAK Server TLS certificate.

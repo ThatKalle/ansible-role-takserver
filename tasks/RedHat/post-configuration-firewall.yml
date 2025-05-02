@@ -1,0 +1,27 @@
+---
+- name: Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+
+- name: Allow TAK ports for client-to-server communications
+  ansible.posix.firewalld:
+    port: "{{ rule.port }}/{{ rule.proto }}"
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  loop:
+    - {proto: 'tcp', port: '8089'}
+    - {proto: 'tcp', port: '8443'}
+    - {proto: 'tcp', port: '8446'}
+    - {proto: 'tcp', port: '8444'}
+    - {proto: 'tcp', port: '9000'}
+    - {proto: 'tcp', port: '9001'}
+    - {proto: 'tcp', port: '9100'}
+    - {proto: 'tcp', port: '9102'}
+  loop_control:
+    loop_var: rule

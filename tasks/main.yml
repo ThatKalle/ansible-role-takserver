@@ -15,26 +15,41 @@
   loop_control:
     loop_var: type
 
-- name: Install TAK Server on Debian
+- name: Install TAK Server (Debian)
   ansible.builtin.include_tasks: "Debian/{{ item }}"
   loop:
     - prerequisites.yml
     - install.yml
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install TAK Server (RedHat)
+  ansible.builtin.include_tasks: "RedHat/{{ item }}"
+  loop:
+    - prerequisites.yml
+    - install.yml
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Post-Configuration - Step 1
+  ansible.builtin.include_tasks: "Common/{{ item }}"
+  loop:
     - post-configuration-cert.yml
     - post-configuration-config.yml
+
+- name: Post-Configuration - Step 2 (Debian)
+  ansible.builtin.include_tasks: "Debian/{{ item }}"
+  loop:
     - post-configuration-service.yml
-    - post-configuration-webadmin.yml
     - post-configuration-firewall.yml
   when: ansible_facts['os_family'] == 'Debian'
 
-# - name: Install TAK Server on RedHat
-#   ansible.builtin.include_tasks: "RedHat/{{ item }}"
-#   loop:
-#     - prerequisites.yml
-#     - install.yml
-#     - post-configuration-cert.yml
-#     - post-configuration-config.yml
-#     - post-configuration-service.yml
-#     - post-configuration-webadmin.yml
-#     - post-configuration-firewall.yml
-#   when: ansible_facts['os_family'] == 'RedHat'
+- name: Post-Configuration - Step 2 (RedHat)
+  ansible.builtin.include_tasks: "RedHat/{{ item }}"
+  loop:
+    - post-configuration-service.yml
+    - post-configuration-firewall.yml
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Post-Configuration - Step 3
+  ansible.builtin.include_tasks: "Common/{{ item }}"
+  loop:
+    - post-configuration-webadmin.yml

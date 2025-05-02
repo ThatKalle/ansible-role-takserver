@@ -2,8 +2,8 @@
 - name: Install packages
   ansible.builtin.apt:
     pkg:
+      - python3-lxml  # Used by Ansible
       - libxml2-utils
-      - python3-lxml
       - lsb-release
       - gnupg
       - openjdk-17-jre

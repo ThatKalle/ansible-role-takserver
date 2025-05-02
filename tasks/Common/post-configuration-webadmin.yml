@@ -12,5 +12,5 @@
 - name: Download webadmin.p12
   ansible.builtin.fetch:
     src: /opt/tak/certs/files/webadmin.p12
-    dest: ../output/
+    dest: "../output/{{ inventory_hostname }}/"
     flat: true

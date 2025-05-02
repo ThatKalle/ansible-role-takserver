@@ -1,0 +1,39 @@
+---
+- name: Copy GPG public key to remote
+  ansible.builtin.copy:
+    src: "takserver-public-gpg.key"
+    dest: "/tmp/takserver-public-gpg.key"
+    mode: '0644'
+
+- name: Import GPG public key
+  ansible.builtin.rpm_key:
+    state: present
+    key: "/tmp/takserver-public-gpg.key"
+
+- name: Check if TAKServer rpm already exists {{ takserver_rpm_filename }}
+  ansible.builtin.stat:
+    path: "/tmp/{{ takserver_rpm_filename }}"
+  register: tak_rpm
+
+- name: Copy TAKServer rpm {{ takserver_rpm_filename }}
+  ansible.builtin.copy:
+    src: "{{ takserver_rpm_filename }}"
+    dest: "/tmp/{{ takserver_rpm_filename }}"
+    mode: '0644'
+  when: not tak_rpm.stat.exists
+
+- name: Verify TAKServer rpm {{ takserver_rpm_filename }}  # noqa: command-instead-of-module
+  ansible.builtin.command: rpm --checksig /tmp/{{ takserver_rpm_filename }}
+  register: verify_output
+  failed_when: verify_output.rc != 0
+  changed_when: false
+
+- name: Install TAKServer rpm {{ takserver_rpm_filename }}
+  ansible.builtin.dnf:
+    name: "/tmp/{{ takserver_rpm_filename }}"
+
+- name: Apply TAK Server SELinux Profile
+  ansible.builtin.command:
+    cmd: ./apply-selinux.sh
+    chdir: /opt/tak
+  changed_when: false

@@ -1,0 +1,6 @@
+---
+- name: Enable service takserver
+  ansible.builtin.service:
+    name: takserver
+    state: started
+    enabled: true

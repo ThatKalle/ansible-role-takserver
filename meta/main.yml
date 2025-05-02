@@ -11,6 +11,9 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - noble
+    - name: EL
+      versions:
+        - '9'
   galaxy_tags:
     - tak
 
@@ -18,3 +21,4 @@ dependencies: []
 
 collections:
   - community.general
+  - ansible.posix
