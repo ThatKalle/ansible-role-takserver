@@ -1,5 +1,7 @@
 ---
 # defaults file for ansible-role-takserver
+takserver_deb_filename: takserver_5.4-RELEASE17_all.deb
+takserver_rpm_filename: takserver-5.4-RELEASE17.noarch.rpm
 
 takserver_ca_country: "SE"
 takserver_ca_state: "Stockholm"

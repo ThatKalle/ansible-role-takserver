@@ -1,3 +1,2 @@
 ---
-takserver_deb_filename: takserver_5.4-RELEASE17_all.deb
-takserver_rpm_filename: takserver-5.4-RELEASE17.noarch.rpm
+# vars file for ansible-role-takserver

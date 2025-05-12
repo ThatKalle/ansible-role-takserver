@@ -53,7 +53,7 @@
 
 - name: Download TAK Server Intermediate CA.
   ansible.builtin.fetch:
-    src: /opt/tak/certs/files/truststore-takserver-intermediate-ca.p12
+    src: /opt/tak/certs/files/truststore-{{ takserver_intermediateca_name }}.p12
     dest: "../output/{{ inventory_hostname }}/"
     flat: true
 
